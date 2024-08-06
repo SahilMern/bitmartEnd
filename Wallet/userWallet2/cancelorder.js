@@ -2,26 +2,22 @@ require("dotenv").config();
 const axios = require("axios");
 const crypto = require("crypto");
 
-
-const API_KEY = "7d36ff96998ddb606885072fea370812349e3800";
-const API_SECRET =
-  "0974bce857b5921619b5522859a66491258c896cc0aa8a2d29a80eb588df59f1";
-const API_MEMO = "kbot";
-const BASE_URL = "https://api-cloud.bitmart.com";
-
+// Credentials from environment variables
+const API_KEY = process.env.API_KEY_2;
+const API_SECRET = process.env.API_SECRET_2;
+const API_MEMO = process.env.API_MEMO_2;
+const BASE_URL = process.env.BASE_URL;
 
 // Get current timestamp
 function get_timestamp() {
   return new Date().getTime().toString();
 }
 
-
 // Generate signature
 function generate_signature(timestamp, body) {
   const message = `${timestamp}#${API_MEMO}#${body}`;
   return crypto.createHmac("sha256", API_SECRET).update(message).digest("hex");
 }
-
 
 // Function to cancel an order
 async function cancel_order(order_id) {
@@ -45,6 +41,5 @@ async function cancel_order(order_id) {
     return true;
   }
 }
-
 
 module.exports = { cancel_order };

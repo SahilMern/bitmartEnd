@@ -3,18 +3,17 @@ const axios = require("axios");
 const crypto = require("crypto");
 const colors = require("colors");
 const { cancel_order } = require("./cancelorder");
-const API_KEY = "7d36ff96998ddb606885072fea370812349e3800";
-const API_SECRET =
-  "0974bce857b5921619b5522859a66491258c896cc0aa8a2d29a80eb588df59f1";
-const API_MEMO = "kbot";
-const BASE_URL = "https://api-cloud.bitmart.com";
 
+// Credentials from environment variables
+const API_KEY = process.env.API_KEY_2;
+const API_SECRET = process.env.API_SECRET_2;
+const API_MEMO = process.env.API_MEMO_2;
+const BASE_URL = process.env.BASE_URL;
 
 // Get current timestamp
 function get_timestamp() {
   return new Date().getTime().toString();
 }
-
 
 // Generate signature
 function generate_signature(timestamp, body) {
@@ -22,7 +21,7 @@ function generate_signature(timestamp, body) {
   return crypto.createHmac("sha256", API_SECRET).update(message).digest("hex");
 }
 
-
+// Function to query order details
 const query_order_details = async (orderIdToQuery, side) => {
   console.log(orderIdToQuery, side, "orderIdToQuery, side");
   const path = `/spot/v2/order_detail?order_id=${orderIdToQuery}`;
@@ -41,7 +40,6 @@ const query_order_details = async (orderIdToQuery, side) => {
       return true;
     }
 
-
     if (
       response.data.data.status === "4" ||
       response.data.data.status === "5"
@@ -49,13 +47,11 @@ const query_order_details = async (orderIdToQuery, side) => {
       const cancelOrder = await cancel_order(orderIdToQuery);
     }
 
-
     return response.data;
   } catch (error) {
     console.error("Error querying order details:", error.response.data);
     return true;
   }
 };
-
 
 module.exports = { query_order_details };

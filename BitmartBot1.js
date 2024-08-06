@@ -63,7 +63,7 @@ const main = async () => {
   while (true) {
     try {
       const response = await axios.get(
-        "https://api-cloud.bitmart.com/spot/v1/ticker_detail?symbol=DEOD_USDT"
+        `${process.env.BASE_URL}/spot/v1/ticker_detail?symbol=DEOD_USDT`
       );
       const bestBidPrice = response.data.data; //?Api Data
 
@@ -161,7 +161,7 @@ const main = async () => {
         // await brakeRange()
       }
 
-      const delay = randomNumber(5,10) * 1000;
+      const delay = randomNumber(20, 30) * 1000;
       console.log(delay, "Delay");
 
       // TODO:- WAITING
