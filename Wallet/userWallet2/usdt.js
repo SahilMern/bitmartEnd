@@ -9,6 +9,7 @@ const API_SECRET = process.env.API_SECRET_2;
 const API_MEMO = process.env.API_MEMO_2;
 const BASE_URL = process.env.BASE_URL;
 
+
 const axios = require("axios");
 const crypto = require("crypto");
 const { query_order_details } = require("./orderDetails");

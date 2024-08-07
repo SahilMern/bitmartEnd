@@ -4,35 +4,36 @@ const axios = require("axios");
 const crypto = require("crypto");
 const { query_order_details } = require("./helpers/orderDetails");
 const cancel_All_orders = require("./helpers/cancelAll");
-// const cancel_All_orders = require("./cancelAll");
 
-function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function randomPrice(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
-//!PLACE ORDER
-//Credentials
+//?Credentials
 const API_KEY = process.env.API_KEY_1;
 const API_SECRET = process.env.API_SECRET_1;
 const API_MEMO = process.env.API_MEMO_1;
 const BASE_URL = process.env.BASE_URL;
 
-// Get current timestamp
+//?RANDOM NUMBER
+function randomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//?USED FOR RANDOM PRICE
+function randomPrice(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+//? Get current timestamp
 function get_timestamp() {
   return new Date().getTime().toString();
 }
-// Generate signature
+//? Generate signature
 function generate_signature(timestamp, body) {
   const message = `${timestamp}#${API_MEMO}#${body}`;
   return crypto.createHmac("sha256", API_SECRET).update(message).digest("hex");
 }
 
+//TODO:-- PLACE ORDER
 async function place_order(side, symbol, size, price) {
-  console.log(side, symbol, size, price);
+  console.log(side, symbol, size, price,"In Place Order");
   const path = "/spot/v2/submit_order";
   const timestamp = get_timestamp();
   const body = {
@@ -81,13 +82,13 @@ const main = async () => {
       // console.log(differencePriceRange > 0.00001); //?Condom Condtion
 
       if (differencePriceRange > 0.000005) {
-        console.log("Price Range is High");
+        // console.log("Price Range is High");
 
         //?GETTING DIFFRENCE OF SELLING AND BUYING
         const difference = sellingPrice - buyingPrice;
 
         //? Calculate 30% of the difference
-        const thirtyPercentOfDifference = difference * 0.2;
+        const thirtyPercentOfDifference = difference * 0.1;
         // console.log(thirtyPercentOfDifference, "30% of differncer");
 
         const adjustedPrice = parseFloat(
@@ -105,7 +106,7 @@ const main = async () => {
 
         // console.log(randomDeodPrice, "randomDeodPrice");
         const finalPrice = parseFloat(randomDeodPrice);
-        console.log(finalPrice, "finalPrice");
+        // console.log(finalPrice, "finalPrice");
 
         let sizeforBuy;
         let buyDeodPrice;
@@ -116,7 +117,7 @@ const main = async () => {
         const size = Math.floor(randomUsdtPrice / buyDeodPrice);
         sizeforBuy = size;
 
-        console.log(buyDeodPrice, "buyDeodPrice");
+        // console.log(buyDeodPrice, "buyDeodPrice");
         // console.log(size, "size");
 
         const selldetails = await place_order(
@@ -133,14 +134,14 @@ const main = async () => {
           buyDeodPrice
         );
 
-        console.log(selldetails.message, "Sell order details");
-        console.log(buydetails.message, "Buy order details");
+        // console.log(selldetails.message, "Sell order details");
+        // console.log(buydetails.message, "Buy order details");
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const buyOrderIdToQuery = buydetails.data.order_id;
         const sellOrderIdToQuery = selldetails.data.order_id;
-        console.log(buyOrderIdToQuery, "buyOrderIdToQuery ");
-        console.log(sellOrderIdToQuery, "sellOrderIdToQuery");
+        // console.log(buyOrderIdToQuery, "buyOrderIdToQuery ");
+        // console.log(sellOrderIdToQuery, "sellOrderIdToQuery");
         //TODO:-  Checking status
         await query_order_details(
           buyOrderIdToQuery,
@@ -156,14 +157,16 @@ const main = async () => {
           API_SECRET,
           API_MEMO
         );
+        console.log("Buying And Selling is Done.....", );
       } else {
         console.log("Price Range is Low");
         // await brakeRange()
       }
 
-      const delay = randomNumber(20, 30) * 1000;
-      console.log(delay, "Delay");
-
+      const delay = randomNumber(10, 15) * 1000;
+      console.log("Next Order After", delay);
+      
+      
       // TODO:- WAITING
       await new Promise((resolve) => setTimeout(resolve, delay));
     } catch (error) {
